@@ -51,7 +51,6 @@ mem_total_mb=`(expr $mem_total_kb / 1000)`
 sfdisk --delete $disk
 
 sfdisk $disk << EFO
-
 , 512M, ef
 , ${mem_total_mb}M, 82
 , , 85

@@ -2,6 +2,72 @@
 bytes_to_gigabytes=1073741824
 kilobytes_to_gigabytes=1048576
 
+keysearch() {
+
+echo
+
+for (( ; ; ))
+do
+	read -p "Enter keyword to find your keyboard layout (enter ? to see full list): " layout
+
+	if [ "$layout" == "?" ] 
+	then
+		ls /usr/share/kbd/keymaps/**/*.map.gz | less -m
+	else
+		break
+	fi
+
+done
+
+LAYOUTS=()
+LAYOUTS=($(ls /usr/share/kbd/keymaps/**/*$layout*.map.gz))
+LAYOUTS+=("Search")
+
+n=1
+
+echo
+
+for layout in ${LAYOUTS[@]}
+	do
+		echo "$((n++))) $(basename $layout)"
+	done
+echo
+
+}
+
+keysearch
+
+for (( ; ; ))
+do
+	read -p "Choose keyboard layout: " input
+
+	if (($input <= ${#LAYOUTS[@]} - 1 && $input >= 1));
+	then
+
+		layout=${LAYOUTS[$input]}
+		 break
+
+	elif (($input == ${#LAYOUTS[@]}));
+	then
+
+		keysearch
+
+	fi
+done
+
+loadkeys $layout
+
+echo
+echo "Set keyboard layout to $(basename $layout)."
+echo
+
+if [ -d "/sys/firmware/efi/efivars" ]; then
+	echo "UEFI mode enabled."
+else
+	echo "UEFI mode not enabled, exiting ArchLazy."
+	exit
+fi
+
 list_disks() {
 echo
 echo "Detecting avaiable storage devices..."
@@ -63,10 +129,10 @@ echo "###################################################################"
 echo "WARNING: THIS WILL PERMANENTLY ERASE ALL DATA CURRENTLY ON ${disk}"
 echo "###################################################################"
 
-sfdisk --delete $disk
-
-sfdisk $disk << EFO
-, 512M, ef
-, ${mem_total_mb}M, 82
-, , 85
-EFO
+#sfdisk --delete $disk
+#
+#sfdisk $disk << EFO
+#, 512M, ef
+#, ${mem_total_mb}M, 82
+#, , 85
+#EFO

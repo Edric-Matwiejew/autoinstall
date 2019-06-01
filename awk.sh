@@ -2,6 +2,22 @@
 bytes_to_gigabytes=1073741824
 kilobytes_to_gigabytes=1048576
 
+wifi_dev=$(iw dev | awk '/Interface/ {print $2}')
+
+ping -q -c 3 archlinux.org > /dev/null
+
+if [ $? -eq 0 ]; then
+	echo "Online using $wifi_dev."
+else
+	echo "Offline"
+	exit
+fi
+
+
+timedatectl set-ntp true
+
+timedatectl status
+
 keysearch() {
 
 echo
@@ -129,10 +145,35 @@ echo "###################################################################"
 echo "WARNING: THIS WILL PERMANENTLY ERASE ALL DATA CURRENTLY ON ${disk}"
 echo "###################################################################"
 
-#sfdisk --delete $disk
-#
-#sfdisk $disk << EFO
-#, 512M, ef
-#, ${mem_total_mb}M, 82
-#, , 85
-#EFO
+sfdisk --delete $disk
+
+sfdisk $disk << EFO
+, 512M, ef
+, ${mem_total_mb}M, 82
+, , 85
+EFO
+
+mkfs.fat -F32 ${disk}1
+mkfs.ext4 ${disk}3
+mkswap ${disk}2
+swapon ${disk}2
+
+mkdir /mnt
+
+mount ${disk}2 /mnt
+
+mkdir /mnt/efi
+
+mount ${disk}2 /mnt/efi
+
+pacstrap /mnt base
+
+genfstab -U /mnt >> /mnt/etc/fstab
+
+arch-chroot /mnt
+
+tzselect 
+
+hwclock --systohc
+
+

@@ -145,13 +145,27 @@ echo "###################################################################"
 echo "WARNING: THIS WILL PERMANENTLY ERASE ALL DATA CURRENTLY ON ${disk}"
 echo "###################################################################"
 
-sfdisk --delete $disk
+fdisk $disk << EOF
+g
+n
+1
 
-sfdisk $disk << EFO
-, 512M, ef
-, ${mem_total_mb}M, 82
-, , 85
-EFO
++512M
+n
+2
+
++${mem_total_kb}K
+n
+3
+
+t
+1
+1
+t
+2
+19
+w
+EOF
 
 mkfs.fat -F32 ${disk}1
 mkfs.ext4 ${disk}3

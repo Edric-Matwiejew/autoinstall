@@ -168,9 +168,11 @@ t
 w
 EOF
 
+partprobe $disk
+
 mkfs.fat -F32 ${disk}1
-mkfs.ext4 ${disk}3
-mkswap ${disk}2
+mkfs.ext4 -F ${disk}3
+mkswap -f ${disk}2
 swapon ${disk}2
 
 mkdir /mnt
@@ -187,8 +189,8 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt
 
-tzselect 
+#tzselect 
 
-hwclock --systohc
+#hwclock --systohc
 
 

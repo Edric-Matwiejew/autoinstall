@@ -187,10 +187,10 @@ pacstrap /mnt base
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-arch-chroot /mnt
-
-#tzselect 
-
-#hwclock --systohc
+arch-chroot /mnt << "rootdo"
+tzselect 
+hwclock --systohc
+echo "I'm in the root."
+rootdo
 
 

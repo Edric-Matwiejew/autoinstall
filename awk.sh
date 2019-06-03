@@ -177,11 +177,11 @@ swapon ${disk}2
 
 mkdir /mnt
 
-mount ${disk}2 /mnt
+mount ${disk}3 /mnt
 
 mkdir /mnt/efi
 
-mount ${disk}2 /mnt/efi
+mount ${disk}1 /mnt/efi
 
 pacstrap /mnt base
 

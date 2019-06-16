@@ -48,13 +48,12 @@ pacstrap /mnt base
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-timezone=$(tzselect)
-
 arch-chroot /mnt << "rootdo"
-ln -sf /usr/share/zoneinfo/${timezone} /etc/localtime
+ln -sf /usr/share/zoneinfo/Australia/Perth /etc/localtime
+
 hwclock --systohc
-source locale_search.sh
-locale_selection
+
+echo "en_AU.UTF-8 UTF-8" >> selected_locales
 
 while read line
 do
@@ -64,10 +63,10 @@ done < selected_locales
 
 locale-gen
 
-# SET LANGUAGE
+# locale_conf??
 
+hostman="t1ger"
 
-read -p "Enter your hostmane: " hostname
 echo $hostname >> /etc/hostname
 
 # assuming IP address us not static other the user should be able to replace the IP address below with their own.
@@ -76,9 +75,7 @@ echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1 localhost" >> etc/hosts
 echo "127.0.1.1 "${hostname}".localdomain "$hostmane"" >> /etc/hosts
 
-#network config here
-
-read -P "Enter you password " password
+password=bright
 
 passwd $password
 
@@ -93,5 +90,5 @@ exit
 
 rootdo
 
-reboot
+#reboot
 

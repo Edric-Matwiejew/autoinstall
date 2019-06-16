@@ -3,7 +3,7 @@
 timedatectl set-ntp true
 timedatectl status
 
-sda="/dev/sda"
+disk=/dev/sda
 mem_size=16
 
 fdisk $disk << EOF
@@ -44,14 +44,14 @@ mkdir /mnt/efi
 
 mount ${disk}1 /mnt/efi
 
-pacstrap /mnt base
+pacstrap /mnt base base-devel
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-arch-chroot /mnt << "rootdo"
+arch-chroot /mnt << rootdo
 ln -sf /usr/share/zoneinfo/Australia/Perth /etc/localtime
 
-hwclock --systohc
+hwclock --systohc --utc
 
 echo "en_AU.UTF-8 UTF-8" >> selected_locales
 
@@ -62,10 +62,10 @@ do
 done < selected_locales
 
 locale-gen
+echo "LANG=en_AU.UTF-8" > /etc/locale.conf
 
-# locale_conf??
 
-hostman="t1ger"
+hostman=t1ger
 
 echo $hostname >> /etc/hostname
 
@@ -77,14 +77,28 @@ echo "127.0.1.1 "${hostname}".localdomain "$hostmane"" >> /etc/hosts
 
 password=bright
 
-passwd $password
+passwd << EOF
+$password
+$password
+EOF
 
 #installing bootloader
-pacman -S grub
-grub-install /dev/"$disk"
+pacman --noconfirm -S grub
+pacman --noconfirm -Syu efibootmgr
+grub-install --efi-directory=efi
 grub-mkconfig -o /boot/grub/grub.cfg
 
-pacman -Syu
+#pacman -Syu
+
+systemctl enable dhcpcd
+
+useradd -m -G wheel edric
+passwd << EOF
+dogood
+dogood
+EOF
+
+sed -i 's/# %wheel ALL=(ALL) ALL/ %wheel ALL=(ALL) ALL/' /etc/sudoers
 
 exit
 

@@ -4,7 +4,7 @@ timedatectl set-ntp true
 timedatectl status
 
 disk=/dev/sda
-mem_size=16
+mem_size=1
 
 fdisk $disk << EOF
 g
@@ -65,7 +65,7 @@ locale-gen
 echo "LANG=en_AU.UTF-8" > /etc/locale.conf
 
 
-hostman=t1ger
+hostname=t1ger
 
 echo $hostname >> /etc/hostname
 
@@ -93,7 +93,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable dhcpcd
 
 useradd -m -G wheel edric
-passwd << EOF
+passwd edric << EOF
 dogood
 dogood
 EOF

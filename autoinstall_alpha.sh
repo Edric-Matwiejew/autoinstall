@@ -48,6 +48,9 @@ pacstrap /mnt base base-devel
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
+hostname=t1ger
+password=bright
+
 arch-chroot /mnt << rootdo
 ln -sf /usr/share/zoneinfo/Australia/Perth /etc/localtime
 
@@ -57,15 +60,11 @@ echo "en_AU.UTF-8 UTF-8" >> selected_locales
 
 while read line
 do
-	echo \#{$line}
-	sed -i "s/\#$line/$line/g" /etc/locale.gen
+	sed -i "s/\#\$line/\$line/g" /etc/locale.gen
 done < selected_locales
 
 locale-gen
 echo "LANG=en_AU.UTF-8" > /etc/locale.conf
-
-
-hostname=t1ger
 
 echo $hostname >> /etc/hostname
 
@@ -73,9 +72,7 @@ echo $hostname >> /etc/hostname
 
 echo "127.0.0.1 localhost" >> /etc/hosts
 echo "::1 localhost" >> etc/hosts
-echo "127.0.1.1 "${hostname}".localdomain "$hostmane"" >> /etc/hosts
-
-password=bright
+echo "127.0.1.1 ${hostname}.localdomain $hostname" >> /etc/hosts
 
 passwd << EOF
 $password
